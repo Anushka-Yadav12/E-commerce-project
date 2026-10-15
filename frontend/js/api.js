@@ -215,6 +215,53 @@ class ApiService {
     if (!response.ok) throw new Error("Failed to create product");
     return await response.json();
   }
+
+  /**
+   * Fetch customer user profile
+   */
+  async getUserProfile(email = "elena.vance@example.com") {
+    if (!this.useMock) {
+      try {
+        const response = await fetch(`${this.baseUrl}/api/user/profile?email=${encodeURIComponent(email)}`);
+        if (response.ok) return await response.json();
+      } catch (err) {
+        this.useMock = true;
+      }
+    }
+    return {
+      id: "user-001",
+      full_name: "Elena Vance",
+      email: "elena.vance@example.com",
+      phone: "+1 (555) 234-8901",
+      tier: "Atelier Privé Gold",
+      points: 1450,
+      preferred_size: "M",
+      preferred_fit: "Relaxed Tailored",
+      address: "742 Evergreen Terrace, Apt 4B",
+      city: "New York",
+      postal_code: "10001",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+    };
+  }
+
+  /**
+   * Update customer profile in SQLite3
+   */
+  async updateUserProfile(profileData) {
+    if (!this.useMock) {
+      try {
+        const response = await fetch(`${this.baseUrl}/api/user/profile`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profileData)
+        });
+        if (response.ok) return await response.json();
+      } catch (err) {
+        this.useMock = true;
+      }
+    }
+    return profileData;
+  }
 }
 
 // Global API instance

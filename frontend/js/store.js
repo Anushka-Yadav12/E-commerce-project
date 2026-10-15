@@ -32,7 +32,22 @@ class Store {
       },
       isAdminMode: false,
       activeProductModal: null,
-      activeDrawer: null // 'cart' | 'wishlist' | 'checkout' | 'admin'
+      activeDrawer: null, // 'cart' | 'wishlist' | 'checkout' | 'admin'
+      currentView: 'storefront', // 'storefront' | 'admin' | 'profile'
+      userProfile: {
+        id: "user-001",
+        full_name: "Elena Vance",
+        email: "elena.vance@example.com",
+        phone: "+1 (555) 234-8901",
+        tier: "Atelier Privé Gold",
+        points: 1450,
+        preferred_size: "M",
+        preferred_fit: "Relaxed Tailored",
+        address: "742 Evergreen Terrace, Apt 4B",
+        city: "New York",
+        postal_code: "10001",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+      }
     };
   }
 
@@ -97,6 +112,15 @@ class Store {
 
   getWishlist() {
     return this.state.wishlist;
+  }
+
+  getUserProfile() {
+    return this.state.userProfile;
+  }
+
+  setUserProfile(profile) {
+    this.state.userProfile = { ...this.state.userProfile, ...profile };
+    this.notify("profile:updated", this.state.userProfile);
   }
 
   getOrders() {

@@ -95,6 +95,47 @@ async function initDatabase() {
     )
   `);
 
+  await dbRun(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      full_name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      phone TEXT,
+      tier TEXT DEFAULT 'Gold Member',
+      points INTEGER DEFAULT 1450,
+      preferred_size TEXT DEFAULT 'M',
+      preferred_fit TEXT DEFAULT 'Relaxed Tailored',
+      address TEXT,
+      city TEXT,
+      postal_code TEXT,
+      avatar TEXT
+    )
+  `);
+
+  // Check if default user exists, otherwise seed
+  const userCount = await dbGet(`SELECT COUNT(*) as count FROM users`);
+  if (userCount.count === 0) {
+    await dbRun(`
+      INSERT INTO users (
+        id, full_name, email, phone, tier, points, preferred_size, preferred_fit,
+        address, city, postal_code, avatar
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      'user-001',
+      'Elena Vance',
+      'elena.vance@example.com',
+      '+1 (555) 234-8901',
+      'Atelier Privé Gold',
+      1450,
+      'M',
+      'Relaxed Tailored',
+      '742 Evergreen Terrace, Apt 4B',
+      'New York',
+      '10001',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+    ]);
+  }
+
   // Check if products exist, otherwise seed
   const countRow = await dbGet(`SELECT COUNT(*) as count FROM products`);
   if (countRow.count === 0) {
@@ -706,6 +747,40 @@ async function getOrders() {
   return orders;
 }
 
+async function getUserProfile(email = 'elena.vance@example.com') {
+  const row = await dbGet('SELECT * FROM users WHERE email = ?', [email]);
+  if (!row) {
+    const first = await dbGet('SELECT * FROM users LIMIT 1');
+    return first;
+  }
+  return row;
+}
+
+async function updateUserProfile(data) {
+  const email = data.email || 'elena.vance@example.com';
+  await dbRun(`
+    UPDATE users SET
+      full_name = ?,
+      phone = ?,
+      preferred_size = ?,
+      preferred_fit = ?,
+      address = ?,
+      city = ?,
+      postal_code = ?
+    WHERE email = ?
+  `, [
+    data.fullName,
+    data.phone,
+    data.preferredSize,
+    data.preferredFit,
+    data.address,
+    data.city,
+    data.postalCode,
+    email
+  ]);
+  return await getUserProfile(email);
+}
+
 module.exports = {
   initDatabase,
   getProducts,
@@ -713,5 +788,8 @@ module.exports = {
   updateProductStock,
   addProduct,
   createOrder,
-  getOrders
+  getOrders,
+  getUserProfile,
+  updateUserProfile
 };
+

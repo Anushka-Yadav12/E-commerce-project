@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (window.AtelierStore.state.isAdminMode) {
       window.ui.renderAdminDashboard();
     }
+  window.AtelierStore.subscribe("orders:updated", () => {
+    window.ui.renderProfileOrders();
   });
 
   // Initial UI Render

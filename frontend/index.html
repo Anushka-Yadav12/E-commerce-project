@@ -66,6 +66,11 @@
             <i class="bi bi-shield-lock me-1"></i> Merchant Admin
           </button>
 
+          <!-- User Profile Trigger -->
+          <button id="profile-nav-btn" class="nav-action-btn p-0 overflow-hidden" onclick="window.ui.toggleProfileView()" title="User Profile & Orders" aria-label="Open User Profile">
+            <img id="nav-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+          </button>
+
           <!-- Wishlist Drawer Trigger -->
           <button class="nav-action-btn" onclick="window.ui.openDrawer('wishlist-drawer')" title="Saved Items" aria-label="Open Wishlist">
             <i class="bi bi-heart"></i>
@@ -313,6 +318,267 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- USER PROFILE PAGE VIEW (Toggled) -->
+  <section id="user-profile-view" class="py-5" style="display: none;">
+    <div class="container">
+      
+      <!-- Profile Header / Identity Banner -->
+      <div class="p-4 p-md-5 rounded-4 mb-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(22, 27, 36, 0.95) 0%, rgba(10, 12, 15, 0.98) 100%); border: 1px solid var(--border-light); box-shadow: var(--shadow-lg);">
+        <div class="row align-items-center g-4">
+          
+          <div class="col-auto">
+            <div class="position-relative">
+              <img id="profile-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" alt="Elena Vance" class="rounded-circle object-fit-cover shadow-lg" style="width: 100px; height: 100px; border: 3px solid var(--accent-gold);">
+              <span class="position-absolute bottom-0 end-0 bg-warning text-dark rounded-circle p-1" title="Gold Tier VIP" style="font-size: 0.75rem; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-gem-fill"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+              <h2 class="h3 fw-bold mb-0 text-main" id="profile-display-name">Elena Vance</h2>
+              <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill" id="profile-tier-badge">
+                <i class="bi bi-stars me-1"></i> Atelier Privé Gold
+              </span>
+            </div>
+            <p class="text-muted small mb-2">
+              <span id="profile-display-email">elena.vance@example.com</span> • Member since Oct 2024
+            </p>
+            <div class="d-flex flex-wrap gap-3 small text-muted">
+              <span><i class="bi bi-geo-alt-fill text-warning me-1"></i> <span id="profile-display-location">New York, NY</span></span>
+              <span><i class="bi bi-rulers text-warning me-1"></i> Preferred Size: <strong class="text-main" id="profile-display-size">M (Relaxed Tailored)</strong></span>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-auto d-flex gap-2">
+            <button class="btn btn-atelier-outline" onclick="window.ui.returnToStorefront()">
+              <i class="bi bi-arrow-left me-1"></i> Back to Storefront
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Quick Metrics Cards -->
+        <div class="row g-3 mt-3 pt-3 border-top border-secondary">
+          <div class="col-6 col-md-3">
+            <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-light);">
+              <span class="text-muted small text-uppercase">Atelier Reward Points</span>
+              <h4 class="fw-bold mt-1 mb-0 text-warning" id="profile-points-count">1,450 pts</h4>
+              <span class="text-success small">$145 store credit value</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-light);">
+              <span class="text-muted small text-uppercase">Orders Placed</span>
+              <h4 class="fw-bold mt-1 mb-0 text-main" id="profile-orders-count">0 Orders</h4>
+              <span class="text-muted small">All-time purchases</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-light);">
+              <span class="text-muted small text-uppercase">Clientele Tier</span>
+              <h4 class="fw-bold mt-1 mb-0 text-warning">Gold Level</h4>
+              <span class="text-muted small">Top 5% Concierge Access</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-light);">
+              <span class="text-muted small text-uppercase">Saved in Wishlist</span>
+              <h4 class="fw-bold mt-1 mb-0 text-danger" id="profile-wishlist-count">0 Designs</h4>
+              <span class="text-muted small">Saved for future capsules</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Profile Tabs Navigation -->
+      <div class="d-flex flex-wrap gap-2 mb-4 pb-2 border-bottom border-secondary">
+        <button class="profile-nav-tab active" data-tab="orders" onclick="window.ui.switchProfileTab('orders')">
+          <i class="bi bi-box-seam me-1"></i> Order History
+        </button>
+        <button class="profile-nav-tab" data-tab="details" onclick="window.ui.switchProfileTab('details')">
+          <i class="bi bi-person-lines-fill me-1"></i> Personal Details & Sizing
+        </button>
+        <button class="profile-nav-tab" data-tab="addresses" onclick="window.ui.switchProfileTab('addresses')">
+          <i class="bi bi-pin-map me-1"></i> Address Book
+        </button>
+        <button class="profile-nav-tab" data-tab="wishlist" onclick="window.ui.switchProfileTab('wishlist')">
+          <i class="bi bi-heart me-1"></i> Saved Wishlist
+        </button>
+        <button class="profile-nav-tab" data-tab="rewards" onclick="window.ui.switchProfileTab('rewards')">
+          <i class="bi bi-award me-1"></i> Privé VIP Benefits
+        </button>
+      </div>
+
+      <!-- Profile Tab Panels -->
+      <div id="profile-tab-content">
+        
+        <!-- Panel 1: Order History -->
+        <div id="profile-tab-orders" class="profile-panel">
+          <div class="card" style="background: var(--bg-card); border: 1px solid var(--border-light);">
+            <div class="card-header bg-transparent border-secondary py-3 d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold mb-0 small text-uppercase"><i class="bi bi-receipt me-2 text-warning"></i> My Orders & Shipments</h5>
+              <span class="text-muted small">Synchronized with SQLite3</span>
+            </div>
+            <div class="p-3 p-md-4" id="profile-orders-list">
+              <!-- Rendered by ui.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Personal Details & Sizing Preferences -->
+        <div id="profile-tab-details" class="profile-panel" style="display: none;">
+          <div class="card" style="background: var(--bg-card); border: 1px solid var(--border-light);">
+            <div class="card-header bg-transparent border-secondary py-3">
+              <h5 class="fw-bold mb-0 small text-uppercase"><i class="bi bi-sliders me-2 text-warning"></i> Tailoring Profile & Preferences</h5>
+            </div>
+            <div class="card-body p-4">
+              <form id="profile-edit-form" onsubmit="event.preventDefault(); window.ui.handleUpdateProfile(this);">
+                <div class="row g-3 mb-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small text-muted">Full Legal Name</label>
+                    <input type="text" id="prof-input-name" name="fullName" class="checkout-input" required value="Elena Vance">
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small text-muted">Email Address (Read-only)</label>
+                    <input type="email" id="prof-input-email" name="email" class="checkout-input" readonly value="elena.vance@example.com" style="opacity: 0.7;">
+                  </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small text-muted">Contact Phone Number</label>
+                    <input type="tel" id="prof-input-phone" name="phone" class="checkout-input" value="+1 (555) 234-8901">
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small text-muted">Preferred Sizing (Default for Quick Add)</label>
+                    <select id="prof-input-size" name="preferredSize" class="custom-select w-100">
+                      <option value="XS">XS — Extra Small</option>
+                      <option value="S">S — Small</option>
+                      <option value="M" selected>M — Medium</option>
+                      <option value="L">L — Large</option>
+                      <option value="XL">XL — Extra Large</option>
+                      <option value="XXL">XXL — Double Extra Large</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small text-muted">Preferred Silhouette Fit</label>
+                    <select id="prof-input-fit" name="preferredFit" class="custom-select w-100">
+                      <option value="Relaxed Tailored" selected>Relaxed Tailored (Signature Atelier Drop)</option>
+                      <option value="Slim Architectural">Slim Architectural (Structured)</option>
+                      <option value="Oversized Boxy">Oversized Boxy (Streetwear Drape)</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label small text-muted">Primary City & Country</label>
+                    <input type="text" id="prof-input-city" name="city" class="checkout-input" value="New York, USA">
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-atelier-primary" id="btn-save-profile">
+                  <i class="bi bi-check2-circle me-1"></i> Save Changes to SQLite3
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Saved Addresses -->
+        <div id="profile-tab-addresses" class="profile-panel" style="display: none;">
+          <div class="row g-4">
+            <div class="col-12 col-md-6">
+              <div class="p-4 rounded-3 h-100 position-relative" style="background: var(--bg-card); border: 1px solid var(--accent-gold);">
+                <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3">Default Shipping</span>
+                <h5 class="fw-bold mb-2"><i class="bi bi-house-door me-2 text-warning"></i> Residence Address</h5>
+                <p class="text-main mb-1 fw-semibold" id="addr-name">Elena Vance</p>
+                <p class="text-muted small mb-1" id="addr-street">742 Evergreen Terrace, Apt 4B</p>
+                <p class="text-muted small mb-3" id="addr-city-zip">New York, NY 10001, United States</p>
+                <div class="text-muted small mb-3"><i class="bi bi-telephone me-1"></i> +1 (555) 234-8901</div>
+                <button class="btn btn-sm btn-atelier-outline py-1 px-3" onclick="window.ui.switchProfileTab('details')">
+                  <i class="bi bi-pencil me-1"></i> Edit Address
+                </button>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="p-4 rounded-3 h-100 border border-secondary" style="background: var(--bg-card);">
+                <span class="badge bg-secondary position-absolute top-0 end-0 m-3">Billing Address</span>
+                <h5 class="fw-bold mb-2"><i class="bi bi-credit-card me-2 text-warning"></i> Atelier Corporate Card</h5>
+                <p class="text-main mb-1 fw-semibold">Elena Vance • Vance Design Studio</p>
+                <p class="text-muted small mb-1">450 Lexington Avenue, Suite 1200</p>
+                <p class="text-muted small mb-3">New York, NY 10017, United States</p>
+                <div class="text-muted small mb-3"><i class="bi bi-shield-check text-success me-1"></i> Verified Billing Match</div>
+                <button class="btn btn-sm btn-atelier-outline py-1 px-3" onclick="window.ui.showToast('Billing address is managed via card issuer', 'info')">
+                  Manage Billing
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 4: Saved Wishlist -->
+        <div id="profile-tab-wishlist" class="profile-panel" style="display: none;">
+          <div class="card" style="background: var(--bg-card); border: 1px solid var(--border-light);">
+            <div class="card-header bg-transparent border-secondary py-3 d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold mb-0 small text-uppercase"><i class="bi bi-heart me-2 text-danger"></i> Saved Wishlist Designs</h5>
+              <span class="text-muted small">1-Click Transfer to Shopping Bag</span>
+            </div>
+            <div class="p-4" id="profile-wishlist-grid">
+              <!-- Rendered by ui.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 5: Privé VIP Benefits -->
+        <div id="profile-tab-rewards" class="profile-panel" style="display: none;">
+          <div class="card mb-4" style="background: var(--bg-card); border: 1px solid var(--border-light);">
+            <div class="card-body p-4 p-md-5">
+              <div class="row align-items-center g-4">
+                <div class="col-12 col-lg-7">
+                  <span class="badge bg-warning text-dark text-uppercase fw-bold mb-2">Exclusive Tier</span>
+                  <h3 class="fw-bold mb-2">Atelier Privé VIP Privileges</h3>
+                  <p class="text-muted small mb-4">
+                    As a Gold Tier client, you enjoy complimentary worldwide white-glove express courier delivery, private invitations to pre-release capsule trunk shows, and dedicated tailoring concierge support.
+                  </p>
+                  
+                  <!-- Tier Progress Bar -->
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                      <span>Current Status: <strong>Gold ($350 spent)</strong></span>
+                      <span class="text-warning">Platinum at $500</span>
+                    </div>
+                    <div class="progress bg-dark" style="height: 10px; border: 1px solid var(--border-light);">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="text-muted small mt-1">Spend $150 more to unlock Platinum Tier with complimentary bespoke alterations.</div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-lg-5">
+                  <div class="p-3 rounded-3" style="background: rgba(224, 169, 109, 0.06); border: 1px solid var(--accent-gold);">
+                    <h6 class="fw-bold text-warning mb-3"><i class="bi bi-check2-all me-1"></i> Active Privileges</h6>
+                    <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-0">
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> Complimentary Worldwide Express Courier</li>
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> 24/7 Dedicated Atelier Wardrobe Concierge</li>
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> 48-Hour Private Pre-Drop Capsule Access</li>
+                      <li><i class="bi bi-check-circle-fill text-success me-2"></i> Handcrafted Signature Gift Box on All Orders</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>

@@ -141,6 +141,27 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
+// User Profile Routes
+app.get('/api/user/profile', async (req, res) => {
+  try {
+    const profile = await db.getUserProfile(req.query.email);
+    res.json(profile);
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+    res.status(500).json({ error: 'Failed to fetch user profile' });
+  }
+});
+
+app.put('/api/user/profile', async (req, res) => {
+  try {
+    const updated = await db.updateUserProfile(req.body);
+    res.json(updated);
+  } catch (err) {
+    console.error('Error updating user profile:', err);
+    res.status(500).json({ error: 'Failed to update user profile' });
+  }
+});
+
 // Local file upload endpoint for product imagery
 app.post('/api/upload', upload.single('image'), (req, res) => {
   try {

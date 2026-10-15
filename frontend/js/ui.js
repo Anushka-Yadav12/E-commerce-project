@@ -1101,6 +1101,249 @@ class UIRenderer {
       }
     }
   }
+
+  /* -------------------------------------------------------------
+     USER PROFILE CONTROLLER & RENDERERS
+  ------------------------------------------------------------- */
+  toggleProfileView() {
+    const storefront = document.getElementById("storefront-view");
+    const adminView = document.getElementById("admin-portal-view");
+    const profileView = document.getElementById("user-profile-view");
+
+    if (!profileView) return;
+
+    if (profileView.style.display === "none") {
+      if (storefront) storefront.style.display = "none";
+      if (adminView) adminView.style.display = "none";
+      profileView.style.display = "block";
+      this.renderUserProfile();
+      this.switchProfileTab("orders");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      this.returnToStorefront();
+    }
+  }
+
+  returnToStorefront() {
+    const storefront = document.getElementById("storefront-view");
+    const adminView = document.getElementById("admin-portal-view");
+    const profileView = document.getElementById("user-profile-view");
+
+    if (storefront) storefront.style.display = "block";
+    if (adminView) adminView.style.display = "none";
+    if (profileView) profileView.style.display = "none";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  switchProfileTab(tabName) {
+    document.querySelectorAll(".profile-nav-tab").forEach(tab => {
+      tab.classList.toggle("active", tab.getAttribute("data-tab") === tabName);
+    });
+
+    document.querySelectorAll(".profile-panel").forEach(panel => {
+      panel.style.display = "none";
+    });
+
+    const activePanel = document.getElementById(`profile-tab-${tabName}`);
+    if (activePanel) {
+      activePanel.style.display = "block";
+    }
+
+    if (tabName === "orders") {
+      this.renderProfileOrders();
+    } else if (tabName === "wishlist") {
+      this.renderProfileWishlist();
+    }
+  }
+
+  async renderUserProfile() {
+    const profile = await window.api.getUserProfile();
+    window.AtelierStore.setUserProfile(profile);
+
+    // Update Header Display
+    const nameEl = document.getElementById("profile-display-name");
+    const emailEl = document.getElementById("profile-display-email");
+    const sizeEl = document.getElementById("profile-display-size");
+    const locEl = document.getElementById("profile-display-location");
+
+    if (nameEl) nameEl.textContent = profile.full_name || profile.fullName || "Elena Vance";
+    if (emailEl) emailEl.textContent = profile.email || "elena.vance@example.com";
+    if (sizeEl) sizeEl.textContent = `${profile.preferred_size || profile.preferredSize || 'M'} (${profile.preferred_fit || profile.preferredFit || 'Relaxed Tailored'})`;
+    if (locEl) locEl.textContent = `${profile.city || 'New York'}, ${profile.postal_code || '10001'}`;
+
+    // Update Form Inputs
+    const formName = document.getElementById("prof-input-name");
+    const formEmail = document.getElementById("prof-input-email");
+    const formPhone = document.getElementById("prof-input-phone");
+    const formSize = document.getElementById("prof-input-size");
+    const formFit = document.getElementById("prof-input-fit");
+    const formCity = document.getElementById("prof-input-city");
+
+    if (formName) formName.value = profile.full_name || profile.fullName || "";
+    if (formEmail) formEmail.value = profile.email || "";
+    if (formPhone) formPhone.value = profile.phone || "";
+    if (formSize) formSize.value = profile.preferred_size || profile.preferredSize || "M";
+    if (formFit) formFit.value = profile.preferred_fit || profile.preferredFit || "Relaxed Tailored";
+    if (formCity) formCity.value = profile.city || "New York";
+
+    // Update Addresses
+    const addrName = document.getElementById("addr-name");
+    const addrStreet = document.getElementById("addr-street");
+    const addrCityZip = document.getElementById("addr-city-zip");
+
+    if (addrName) addrName.textContent = profile.full_name || profile.fullName || "Elena Vance";
+    if (addrStreet) addrStreet.textContent = profile.address || "742 Evergreen Terrace, Apt 4B";
+    if (addrCityZip) addrCityZip.textContent = `${profile.city || 'New York'}, ${profile.postal_code || '10001'}, United States`;
+
+    // Update Metrics
+    const orders = await window.api.getOrders();
+    const wishlist = window.AtelierStore.getWishlist();
+
+    const ordersCountEl = document.getElementById("profile-orders-count");
+    const wishCountEl = document.getElementById("profile-wishlist-count");
+
+    if (ordersCountEl) ordersCountEl.textContent = `${orders.length} Order${orders.length === 1 ? '' : 's'}`;
+    if (wishCountEl) wishCountEl.textContent = `${wishlist.length} Design${wishlist.length === 1 ? '' : 's'}`;
+  }
+
+  async renderProfileOrders() {
+    const container = document.getElementById("profile-orders-list");
+    if (!container) return;
+
+    const orders = await window.api.getOrders();
+
+    if (orders.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-5">
+          <i class="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
+          <h5 class="fw-bold mb-2">No Past Orders Found</h5>
+          <p class="text-muted small mb-4">You have not placed any orders yet. Discover our capsule tailoring pieces.</p>
+          <button class="btn btn-atelier-primary" onclick="window.ui.returnToStorefront()">
+            Browse Collections
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = orders.map(ord => `
+      <div class="order-history-card">
+        <div class="order-history-header">
+          <div>
+            <div class="text-warning font-monospace fw-bold fs-6">${ord.orderId}</div>
+            <div class="text-muted small">${new Date(ord.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })} at ${new Date(ord.createdAt).toLocaleTimeString()}</div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
+              <i class="bi bi-check2-circle me-1"></i> ${ord.status}
+            </span>
+            <div class="fs-5 fw-bold text-main">$${ord.pricing.total}</div>
+          </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-md-8">
+            ${ord.items.map(it => `
+              <div class="order-item-mini">
+                <img src="${it.image}" alt="${it.name}" class="order-item-mini-img">
+                <div>
+                  <div class="fw-bold text-main small">${it.name}</div>
+                  <div class="text-muted small">${it.color} • Size ${it.size} • Qty: ${it.quantity}</div>
+                  <div class="text-warning small fw-semibold">$${it.price} each</div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="col-12 col-md-4 p-3 rounded-2" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-light);">
+            <div class="text-muted small text-uppercase fw-bold mb-2">Delivery Tracking</div>
+            <div class="small text-main font-monospace mb-1">Tracking ID: <strong>${ord.trackingNumber}</strong></div>
+            <div class="text-muted small mb-3">Recipient: ${ord.customer.fullName}</div>
+            <button class="btn btn-sm btn-atelier-outline w-100 py-1" onclick="window.ui.showToast('Atelier Package is in active transit to ' + '${ord.customer.shippingAddress}', 'info')">
+              <i class="bi bi-truck me-1"></i> Track Live Courier
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  renderProfileWishlist() {
+    const container = document.getElementById("profile-wishlist-grid");
+    if (!container) return;
+
+    const wishlist = window.AtelierStore.getWishlist();
+    if (wishlist.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-5">
+          <i class="bi bi-heart fs-1 text-muted mb-3 d-block"></i>
+          <h5 class="fw-bold mb-2">Your Wishlist is Empty</h5>
+          <p class="text-muted small mb-4">Tap the heart icon on any design to save it to your client profile.</p>
+          <button class="btn btn-atelier-primary" onclick="window.ui.returnToStorefront()">
+            Explore Capsule
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    const products = wishlist.map(id => window.AtelierStore.getProduct(id)).filter(Boolean);
+
+    container.innerHTML = `
+      <div class="row g-3">
+        ${products.map(p => `
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-light);">
+              <img src="${p.colors[0].image}" style="width: 100%; aspect-ratio: 3/4; object-fit: cover;" class="rounded-2 mb-2">
+              <h6 class="fw-bold mb-1 text-truncate">${p.name}</h6>
+              <div class="text-warning fw-bold small mb-2">$${p.price}</div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-atelier-primary flex-grow-1 py-1 small" onclick="window.ui.openProductModal('${p.id}')">
+                  Select Size
+                </button>
+                <button class="btn btn-sm btn-outline-danger py-1" onclick="window.ui.toggleWishlist('${p.id}'); window.ui.renderProfileWishlist();">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  async handleUpdateProfile(form) {
+    const btn = document.getElementById("btn-save-profile");
+    if (btn) {
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Updating SQLite3...`;
+      btn.disabled = true;
+    }
+
+    const formData = new FormData(form);
+    const payload = {
+      fullName: formData.get("fullName"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      preferredSize: formData.get("preferredSize"),
+      preferredFit: formData.get("preferredFit"),
+      city: formData.get("city"),
+      address: "742 Evergreen Terrace, Apt 4B",
+      postalCode: "10001"
+    };
+
+    try {
+      const updated = await window.api.updateUserProfile(payload);
+      this.showToast("Personal details & sizing profile saved to SQLite3!", "success");
+      this.renderUserProfile();
+    } catch (err) {
+      console.error(err);
+      this.showToast("Failed to update profile: " + err.message, "danger");
+    } finally {
+      if (btn) {
+        btn.innerHTML = `<i class="bi bi-check2-circle me-1"></i> Save Changes to SQLite3`;
+        btn.disabled = false;
+      }
+    }
+  }
 }
 
 // Global UI renderer instance
