@@ -68,6 +68,14 @@ anushka yadav/
 - **Live Orders Feed:** Shows all customer orders stored in the SQLite3 database.
 - **Add New Design Modal:** Upload product photography directly to the local `uploads/` folder and persist new items into SQLite3 via REST API.
 
+### 7. User Profile & Atelier Privé Client Portal
+- **Header Avatar Trigger:** Direct access from the navigation bar.
+- **Order History:** Real-time customer order cards loaded from SQLite3 with item thumbnails, tracking ID, and live courier status.
+- **Personal Information & Sizing:** Editable profile fields (Full Name, Phone, City, Preferred Size XS–XXL, Preferred Fit) synced directly to SQLite3.
+- **Address Book:** Default Residence and Atelier Corporate Billing cards.
+- **Clientele Wishlist:** Integrated saved designs with 1-click addition to bag.
+- **Atelier Privé Rewards:** Loyalty tier progress ($350 spent towards Platinum), points balance (1,450 pts / $145 value), and exclusive member privileges.
+
 ---
 
 ## 🛠️ Technology Stack
